@@ -3,6 +3,8 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../models/insurance_profile.dart';
+import 'ai_assistant_screen.dart';
 import 'post_login_shell.dart';
 
 // ============================================================
@@ -133,6 +135,19 @@ class _OpeningLoginScreenState
   // AURA
   // ============================================================
 
+  /// Open the full Aura chat from the front page (guest mode, no account yet).
+  void _openAuraChat() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => AiAssistantScreen(
+          initialProfile: InsuranceProfile.demo(),
+          guestMode: true,
+        ),
+      ),
+    );
+  }
+
   void _toggleAura() {
     setState(() {
       _auraOpen = !_auraOpen;
@@ -141,7 +156,7 @@ class _OpeningLoginScreenState
         _auraQuestion = true;
 
         _auraText =
-            'Hey, this is Aura. Do you need help signing in or signing up?';
+            'Hey, this is Aura. Want to chat about your life insurance needs?';
       }
     });
   }
@@ -149,16 +164,16 @@ class _OpeningLoginScreenState
   void _answerAura(
     bool yes,
   ) {
+    if (yes) {
+      // "Yes, let's chat" opens the full Aura assistant in guest mode.
+      setState(() => _auraOpen = false);
+      _openAuraChat();
+      return;
+    }
+
     setState(() {
       _auraQuestion = false;
-
-      if (yes) {
-        _auraText =
-            'New here? Tap Sign up. If not, sign in with your email.';
-      } else {
-        _auraText =
-            'No problem. Tap me any time.';
-      }
+      _auraText = 'No problem. Tap me any time to chat.';
     });
   }
 
@@ -1930,7 +1945,7 @@ class _AuraBubble extends StatelessWidget {
                     ),
                     child:
                         const Text(
-                      'No',
+                      'Not now',
                     ),
                   ),
                 ),
@@ -1956,7 +1971,7 @@ class _AuraBubble extends StatelessWidget {
                     ),
                     child:
                         const Text(
-                      'Yes',
+                      'Chat with Aura',
                       style:
                           TextStyle(
                         fontWeight:

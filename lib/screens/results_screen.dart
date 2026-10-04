@@ -13,9 +13,14 @@ enum ResultsAction {
 class ResultsScreen extends StatelessWidget {
   final InsuranceProfile profile;
 
+  /// Authoritative result from the Aura backend. When provided, the screen
+  /// shows these figures instead of re-computing locally.
+  final CoverageAssessment? assessment;
+
   const ResultsScreen({
     super.key,
     required this.profile,
+    this.assessment,
   });
 
   String _money(double value) {
@@ -37,7 +42,9 @@ class ResultsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final assessment = CoverageEngine.assess(profile);
+    // Prefer the backend's authoritative numbers; fall back to a local estimate
+    // only when the screen is opened without a prior Aura chat.
+    final assessment = this.assessment ?? CoverageEngine.assess(profile);
 
     final primaryText = AppColors.primaryText;
     final secondaryText = AppColors.secondaryText;
@@ -306,7 +313,7 @@ class ResultsScreen extends StatelessWidget {
                       ),
                     ),
                     child: const Text(
-                      'Compare Term vs. Whole Life',
+                      'Compare Term vs. Permanent',
                       style: TextStyle(
                         fontWeight: FontWeight.w700,
                       ),

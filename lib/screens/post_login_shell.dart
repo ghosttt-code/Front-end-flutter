@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../models/insurance_profile.dart';
+import '../services/coverage_engine.dart';
 import '../theme/app_colors.dart';
 import '../widgets/aura_button.dart';
 
@@ -27,9 +28,12 @@ class _PostLoginShellState extends State<PostLoginShell> {
   InsuranceProfile _profile =
       InsuranceProfile.demo();
 
+  // Authoritative assessment from the Aura backend, once a chat completes.
+  CoverageAssessment? _assessment;
+
   Future<void> _openAura() async {
-    final updated =
-        await Navigator.push<InsuranceProfile>(
+    final result =
+        await Navigator.push<AuraResult>(
       context,
       MaterialPageRoute(
         builder: (_) => AiAssistantScreen(
@@ -38,12 +42,13 @@ class _PostLoginShellState extends State<PostLoginShell> {
       ),
     );
 
-    if (!mounted || updated == null) {
+    if (!mounted || result == null) {
       return;
     }
 
     setState(() {
-      _profile = updated;
+      _profile = result.profile;
+      _assessment = result.assessment;
     });
 
     final action =
@@ -51,7 +56,8 @@ class _PostLoginShellState extends State<PostLoginShell> {
       context,
       MaterialPageRoute(
         builder: (_) => ResultsScreen(
-          profile: updated,
+          profile: result.profile,
+          assessment: result.assessment,
         ),
       ),
     );
@@ -78,6 +84,8 @@ class _PostLoginShellState extends State<PostLoginShell> {
         builder: (_) =>
             InsuranceComparisonScreen(
           profile: _profile,
+          yearsOfSupport:
+              _assessment?.incomeReplacementYears,
         ),
       ),
     );
@@ -102,6 +110,7 @@ class _PostLoginShellState extends State<PostLoginShell> {
 
       DashboardScreen(
         profile: _profile,
+        assessment: _assessment,
         onAskAI: _openAura,
         onRecalculate: _openAura,
         onCompare: _openCompare,
