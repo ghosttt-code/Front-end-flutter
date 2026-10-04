@@ -251,7 +251,7 @@ class ServicesScreen extends StatelessWidget {
 
               _ExploreItem(
                 icon: Icons.compare_arrows_rounded,
-                title: 'Term vs. Whole Life',
+                title: 'Term vs. Permanent',
                 subtitle: 'Compare coverage options and tradeoffs',
                 accent: AppColors.auroraViolet,
                 cardColor: cardColor,

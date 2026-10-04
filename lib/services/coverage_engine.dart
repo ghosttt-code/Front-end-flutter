@@ -21,6 +21,29 @@ class CoverageAssessment {
 }
 
 class CoverageEngine {
+  /// Backend-authoritative result: build an assessment directly from the Aura
+  /// backend's figures (so the UI shows exactly what Aura calculated, not a
+  /// re-derived local estimate). Years is taken from the backend profile.
+  static CoverageAssessment fromBackend({
+    required int years,
+    required double incomeReplacement,
+    required double debts,
+    required double futureNeeds,
+    required double existingCoverage,
+    required double estimatedNeed,
+  }) {
+    return CoverageAssessment(
+      incomeReplacementYears: years,
+      incomeReplacement: incomeReplacement,
+      debts: debts,
+      futureNeeds: futureNeeds,
+      existingCoverage: existingCoverage,
+      estimatedNeed: estimatedNeed,
+    );
+  }
+
+  /// Local fallback estimate, used only when no backend result is available
+  /// (e.g. the results screen is opened directly without running a chat).
   static CoverageAssessment assess(InsuranceProfile profile) {
     final years = _replacementYears(profile.dependents);
 

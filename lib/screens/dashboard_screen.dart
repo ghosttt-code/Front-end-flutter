@@ -7,6 +7,10 @@ import '../widgets/app_background.dart';
 
 class DashboardScreen extends StatelessWidget {
   final InsuranceProfile profile;
+
+  /// Authoritative assessment from the Aura backend, when available.
+  final CoverageAssessment? assessment;
+
   final VoidCallback onAskAI;
   final VoidCallback onRecalculate;
   final VoidCallback onCompare;
@@ -14,6 +18,7 @@ class DashboardScreen extends StatelessWidget {
   const DashboardScreen({
     super.key,
     required this.profile,
+    this.assessment,
     required this.onAskAI,
     required this.onRecalculate,
     required this.onCompare,
@@ -38,7 +43,8 @@ class DashboardScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final assessment = CoverageEngine.assess(profile);
+    // Prefer the backend's authoritative numbers; fall back to a local estimate.
+    final assessment = this.assessment ?? CoverageEngine.assess(profile);
 
     final primaryText = AppColors.primaryText;
     final secondaryText = AppColors.secondaryText;
